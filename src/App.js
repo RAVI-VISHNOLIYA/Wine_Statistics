@@ -1,4 +1,5 @@
 import React from "react";
+import "./App.css";
 
 const data = [
   {
@@ -374,7 +375,7 @@ function App() {
     <React.Fragment>
       <div>
         <h1>Wine Statistics</h1>
-        <table>
+        <table className="wine-table">
           <thead>
             <tr>
               <th>Property</th>
