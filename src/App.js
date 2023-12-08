@@ -1,7 +1,6 @@
 import React from "react";
-import "./App.css";
 
-const data = [
+const wineData = [
   {
     Alcohol: 1,
     "Malic Acid": 14.23,
@@ -244,230 +243,131 @@ const data = [
   },
 ];
 
-//calculate Mean
-const calculateMean = (data, property) => {
-  const values = data.map((entry) => {
-    const value = entry[property];
-    return typeof value === "string" ? parseFloat(value) : value;
-  });
-
-  const filteredValues = values.filter((value) => !isNaN(value));
-
-  if (filteredValues.length === 0) {
-    return 0;
-  }
-
-  return (
-    filteredValues.reduce((sum, value) => sum + value, 0) /
-    filteredValues.length
-  );
+const calculateMean = (values) => {
+  const sum = values.reduce((acc, value) => acc + value, 0);
+  return +(sum / values.length).toFixed(3);
 };
 
-//calculate Median
-const calculateMedian = (data, property) => {
-  const values = data.map((entry) => {
-    const value = entry[property];
-    return typeof value === "string" ? parseFloat(value) : value;
-  });
-
+const calculateMedian = (values) => {
   const sortedValues = values.slice().sort((a, b) => a - b);
-  const length = sortedValues.length;
-
-  if (length === 0) {
-    return 0; // or handle this case based on your requirements
-  }
-
-  // If the length is odd, return the middle value
-  if (length % 2 === 1) {
-    return sortedValues[Math.floor(length / 2)];
-  } else {
-    // If the length is even, return the average of the two middle values
-    const mid1 = sortedValues[length / 2 - 1];
-    const mid2 = sortedValues[length / 2];
-    return (mid1 + mid2) / 2;
-  }
+  const mid = Math.floor(sortedValues.length / 2);
+  return +(
+    sortedValues.length % 2 !== 0
+      ? sortedValues[mid]
+      : (sortedValues[mid - 1] + sortedValues[mid]) / 2
+  ).toFixed(3);
 };
 
-//calculate Standard Deviation
-const calculateStandardDeviation = (data, property) => {
-  const values = data.map((entry) => {
-    const value = entry[property];
-    return typeof value === "string" ? parseFloat(value) : value;
+const calculateMode = (values) => {
+  const countMap = {};
+  values.forEach((value) => {
+    countMap[value] = (countMap[value] || 0) + 1;
   });
 
-  const mean = values.reduce((sum, value) => sum + value, 0) / values.length;
+  let mode;
+  let maxCount = 0;
 
-  const squaredDifferences = values.map((value) => Math.pow(value - mean, 2));
-  const meanOfSquaredDifferences =
-    squaredDifferences.reduce((sum, value) => sum + value, 0) /
-    squaredDifferences.length;
+  for (const value in countMap) {
+    if (countMap[value] > maxCount) {
+      mode = value;
+      maxCount = countMap[value];
+    }
+  }
 
-  const standardDeviation = Math.sqrt(meanOfSquaredDifferences);
-
-  return standardDeviation;
+  return typeof mode === "number" ? +mode.toFixed(3) : mode;
 };
 
-//Mean of wine
-const meanAlcohol = calculateMean(data, "Alcohol");
-const meanMalicAcid = calculateMean(data, "Malic Acid");
-const meanAsh = calculateMean(data, "Ash");
-const meanAlcanlinity = calculateMean(data, "Alcalinity of ash");
-const meanMagnesium = calculateMean(data, "Magnesium");
-const meanTotalPhenols = calculateMean(data, "Total phenols");
-const meanFlavanoids = calculateMean(data, "Flavanoids");
-const meanNonflavanoidPhenols = calculateMean(data, "Nonflavanoid phenols");
-const meanProanthocyanins = calculateMean(data, "Proanthocyanins");
-const meanColorIntensity = calculateMean(data, "Color intensity");
-const meanHue = calculateMean(data, "Hue");
-const meanDilutedWines = calculateMean(data, "OD280/OD315 of diluted wines");
-const meanUnknown = calculateMean(data, "Unknown");
+// Function to calculate class-wise statistics for a given property
+const calculateClassStatistics = (data, property) => {
+  const classes = {};
 
-//Median of wine
-const medianAlcohol = calculateMedian(data, "Alcohol");
-const medianMalicAcid = calculateMedian(data, "Malic Acid");
-const medianAsh = calculateMedian(data, "Ash");
-const medianAlcanlinity = calculateMedian(data, "Alcalinity of ash");
-const medianMagnesium = calculateMedian(data, "Magnesium");
-const medianTotalPhenols = calculateMedian(data, "Total phenols");
-const medianFlavanoids = calculateMedian(data, "Flavanoids");
-const medianNonflavanoidPhenols = calculateMedian(data, "Nonflavanoid phenols");
-const medianProanthocyanins = calculateMedian(data, "Proanthocyanins");
-const medianColorIntensity = calculateMedian(data, "Color intensity");
-const medianHue = calculateMedian(data, "Hue");
-const medianDilutedWines = calculateMedian(
-  data,
-  "OD280/OD315 of diluted wines"
-);
-const medianUnknown = calculateMedian(data, "Unknown");
+  data.forEach((entry) => {
+    const alcoholClass = entry.Alcohol;
+    const value = parseFloat(entry[property]);
 
-//Standard Deviation
-const stdDeviationAlcohol = calculateStandardDeviation(data, "Alcohol");
-const stdDeviationMalicAcid = calculateStandardDeviation(data, "Malic Acid");
-const stdDeviationAsh = calculateStandardDeviation(data, "Ash");
-const stdDeviationAlcan = calculateStandardDeviation(data, "Alcalinity of ash");
-const stdDeviationMagnesium = calculateStandardDeviation(data, "Magnesium");
-const stdDeviationTotalPhenols = calculateStandardDeviation(
-  data,
-  "Total phenols"
-);
-const stdDeviationFlavanoids = calculateStandardDeviation(data, "Flavanoids");
-const stdDeviationNonFlavanoids = calculateStandardDeviation(
-  data,
-  "Nonflavanoid phenols"
-);
-const stdDeviationProanthocyanins = calculateStandardDeviation(
-  data,
-  "Proanthocyanins"
-);
-const stdDeviationColInten = calculateStandardDeviation(
-  data,
-  "Color intensity"
-);
-const stdDeviationHue = calculateStandardDeviation(data, "Hue");
-const stdDeviationDilwines = calculateStandardDeviation(
-  data,
-  "OD280/OD315 of diluted wines"
-);
-const stdDeviationUnknown = calculateStandardDeviation(data, "Unknown");
+    if (!classes[alcoholClass]) {
+      classes[alcoholClass] = [];
+    }
 
-function App() {
+    classes[alcoholClass].push(value);
+  });
+
+  const classStatistics = {};
+  for (const alcoholClass in classes) {
+    const values = classes[alcoholClass];
+    classStatistics[alcoholClass] = {
+      mean: calculateMean(values),
+      median: calculateMedian(values),
+      mode: calculateMode(values),
+    };
+  }
+
+  return classStatistics;
+};
+
+// Function to create a new property "Gamma" for each data point
+const calculateGamma = (data) => {
+  return data.map((entry) => {
+    const ash = parseFloat(entry.Ash);
+    const hue = parseFloat(entry.Hue);
+    const magnesium = parseFloat(entry.Magnesium);
+    const gamma = +((ash * hue) / magnesium).toFixed(3);
+    return { ...entry, Gamma: gamma };
+  });
+};
+
+// Function to calculate class-wise statistics for the new property "Gamma"
+const calculateGammaStatistics = (gammaData) => {
+  return calculateClassStatistics(gammaData, "Gamma");
+};
+
+const StatisticsTable = ({ statistics, property }) => {
+  const rows = ["mean", "median", "mode"];
+
   return (
-    <React.Fragment>
-      <div>
-        <h1>Wine Statistics</h1>
-        <table className="wine-table">
-          <thead>
-            <tr>
-              <th>Property</th>
-              <th>Mean</th>
-              <th>Median</th>
-              <th>Standard Deviation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Alcohol</td>
-              <td>{meanAlcohol}</td>
-              <td>{medianAlcohol}</td>
-              <td>{stdDeviationAlcohol}</td>
-            </tr>
-            <tr>
-              <td>Malic Acid</td>
-              <td>{meanMalicAcid}</td>
-              <td>{medianMalicAcid}</td>
-              <td>{stdDeviationMalicAcid}</td>
-            </tr>
-            <tr>
-              <td>Ash</td>
-              <td>{meanAsh}</td>
-              <td>{medianAsh}</td>
-              <td>{stdDeviationAsh}</td>
-            </tr>
-            <tr>
-              <td>Alcalinity of ash</td>
-              <td>{meanAlcanlinity}</td>
-              <td>{medianAlcanlinity}</td>
-              <td>{stdDeviationAlcan}</td>
-            </tr>
-            <tr>
-              <td>Magnesium</td>
-              <td>{meanMagnesium}</td>
-              <td>{medianMagnesium}</td>
-              <td>{stdDeviationMagnesium}</td>
-            </tr>
-            <tr>
-              <td>Total phenols</td>
-              <td>{meanTotalPhenols}</td>
-              <td>{medianTotalPhenols}</td>
-              <td>{stdDeviationTotalPhenols}</td>
-            </tr>
-            <tr>
-              <td>Flavanoids</td>
-              <td>{meanFlavanoids}</td>
-              <td>{medianFlavanoids}</td>
-              <td>{stdDeviationFlavanoids}</td>
-            </tr>
-            <tr>
-              <td>Nonflavanoid phenols</td>
-              <td>{meanNonflavanoidPhenols}</td>
-              <td>{medianNonflavanoidPhenols}</td>
-              <td>{stdDeviationNonFlavanoids}</td>
-            </tr>
-            <tr>
-              <td>Proanthocyanins</td>
-              <td>{meanProanthocyanins}</td>
-              <td>{medianProanthocyanins}</td>
-              <td>{stdDeviationProanthocyanins}</td>
-            </tr>
-            <tr>
-              <td>Color intensity</td>
-              <td>{meanColorIntensity}</td>
-              <td>{medianColorIntensity}</td>
-              <td>{stdDeviationColInten}</td>
-            </tr>
-            <tr>
-              <td>Hue</td>
-              <td>{meanHue}</td>
-              <td>{medianHue}</td>
-              <td>{stdDeviationHue}</td>
-            </tr>
-            <tr>
-              <td>OD280/OD315 of diluted wines</td>
-              <td>{meanDilutedWines}</td>
-              <td>{medianDilutedWines}</td>
-              <td>{stdDeviationDilwines}</td>
-            </tr>
-            <tr>
-              <td>Unknown</td>
-              <td>{meanUnknown}</td>
-              <td>{medianUnknown}</td>
-              <td>{stdDeviationUnknown}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </React.Fragment>
+    <table border="1" cellPadding="20">
+      <thead>
+        <tr>
+          <th>Measures</th>
+          {Object.keys(statistics).map((alcoholClass) => (
+            <th key={alcoholClass}>{`Class ${alcoholClass}`}</th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((row) => (
+          <tr key={row}>
+            <td>{`${property} ${row}`}</td>
+            {Object.keys(statistics).map((alcoholClass) => (
+              <td key={`${alcoholClass}-${row}`}>
+                {statistics[alcoholClass][row]}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
-}
+};
+
+const App = () => {
+  const flavanoidsStatistics = calculateClassStatistics(wineData, "Flavanoids");
+  const gammaData = calculateGamma(wineData);
+  const gammaStatistics = calculateGammaStatistics(gammaData);
+
+  return (
+    <div>
+      <h1>Wine Statistics</h1>
+      <h2>Flavanoids Statistics</h2>
+      <StatisticsTable
+        statistics={flavanoidsStatistics}
+        property="Flavanoids"
+      />
+
+      <h2>Gamma Statistics</h2>
+      <StatisticsTable statistics={gammaStatistics} property="Gamma" />
+    </div>
+  );
+};
 
 export default App;
